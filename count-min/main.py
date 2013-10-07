@@ -1,13 +1,12 @@
 from random import lognormvariate
-from cmsketch import sketch, mshash
+from cmsketch import sketch
 from collections import defaultdict
 import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     nums = [int(lognormvariate(1, 0.6) * 1000) for i in range(1000000)]
 
-    hashes = [mshash.MultiplyShift(8192) for _ in xrange(8)]
-    sketch = sketch.Sketch(hashes, 8192)
+    sketch = sketch.Sketch.fromParameters(10**-4, 0.0002)
 
     d = defaultdict(int)
     for num in nums:
