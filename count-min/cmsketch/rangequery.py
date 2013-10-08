@@ -11,10 +11,10 @@ class RangeQuery(object):
         self.counters = [self.get_counter(pow(2, i)) for i in xrange(self.num_counters)]
 
     def get_counter(self, size):
-        if size <= 512:
+        if size <= 16384:
             return arrayobs.ArrayObs(size)
         else:
-            return sketch.Sketch.fromParameters(10**-4, 0.001)
+            return sketch.Sketch.fromParameters(10**-3, 0.001)
 
     def subset(self, qlo, qhi):
         """Return number of observed elements in [qlo, qhi]"""
@@ -28,6 +28,7 @@ class RangeQuery(object):
             return 0
 
         if (qlo <= lo and qhi >= hi):
+            print (qlo, qhi, lo, hi, level, idx, self.counters[level].count_obs(idx))
             return self.counters[level].count_obs(idx)
 
         mid = lo + (hi - lo) / 2
@@ -41,10 +42,12 @@ class RangeQuery(object):
         self.__obs(n, 0, self.supported_range - 1, 0, 0)
 
     def __obs(self, n, lo, hi, level, idx):
-        if not (lo <= n <= hi) or lo > hi or level >= self.num_counters:
-            return
-        print(level, lo, hi, idx)
-        self.counters[level].obs(idx)
-        mid = lo + (hi - lo) / 2
-        self.__obs(n, lo, mid, level + 1, 2 * idx)
-        self.__obs(n, mid + 1, hi, level + 1, 2 * idx + 1)
+        st = [(lo, hi, level, idx)]
+        while st:
+            lo, hi, level, idx = st.pop()
+            if not (lo <= n <= hi) or lo > hi or level >= self.num_counters:
+                return
+            self.counters[level].obs(idx)
+            mid = lo + (hi - lo) / 2
+            st.append((lo, mid, level + 1, 2 * idx))
+            st.append((mid + 1, hi, level + 1, 2 * idx + 1))
