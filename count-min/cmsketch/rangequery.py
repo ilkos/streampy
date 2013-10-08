@@ -28,7 +28,6 @@ class RangeQuery(object):
             return 0
 
         if (qlo <= lo and qhi >= hi):
-            print (qlo, qhi, lo, hi, level, idx, self.counters[level].count_obs(idx))
             return self.counters[level].count_obs(idx)
 
         mid = lo + (hi - lo) / 2
@@ -46,7 +45,7 @@ class RangeQuery(object):
         while st:
             lo, hi, level, idx = st.pop()
             if not (lo <= n <= hi) or lo > hi or level >= self.num_counters:
-                return
+                continue
             self.counters[level].obs(idx)
             mid = lo + (hi - lo) / 2
             st.append((lo, mid, level + 1, 2 * idx))
