@@ -2,8 +2,7 @@ import mshash
 import math
 
 class Sketch(object):
-    """
-    Count-min sketch summary of data
+    """ Count-min sketch summary of data
     Estimate upper bounded by e(x) <= f(x) + eps * num_distinct(input) with probability 1 - delta
     Where e(x) estimate count, f(x) actual count
     """
